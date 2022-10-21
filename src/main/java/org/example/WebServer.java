@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
  * Simple web server.
  */
 public class WebServer {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         // Port number for http request
         int port = args.length > 1 ? Integer.parseInt(args[1]) : 8080;
         // The maximum queue length for incoming connection
@@ -35,7 +35,23 @@ public class WebServer {
 
                     // Process request
                     Processor proc = new Processor(socket, request);
-                    proc.process();
+                    proc.start();
+                    ThreadPool threadPool = new ThreadPool(5, 15);
+
+                    for(int i=0; i<15; i++) {
+
+                        int taskNo = i;
+                        threadPool.execute( () -> {
+                            String message =
+                                    Thread.currentThread().getName()
+                                            + ": Task " + taskNo ;
+                            System.out.println(message);
+                        });
+                    }
+
+                    threadPool.waitUntilAllTasksFinished();
+                    threadPool.stop();
+                    
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }

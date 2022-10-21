@@ -9,7 +9,7 @@ import java.net.Socket;
  * Processor of HTTP request.
  */
 
-public class Processor {
+public class Processor extends Thread{
     private final Socket socket;
     private final HttpRequest request;
     
@@ -20,15 +20,26 @@ public class Processor {
     }
 
     public String response = "";
+    //variables...
+    //...
+    @Override
+    public void run(){
+        try {
+            process();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+   
     public void process() throws IOException {
         System.out.println("Got request:");
         System.out.println(request.toString());
         System.out.flush();
 
         String s = request.toString();
-        if(s.contains("create")){
+        if(s.contains("exec")){
             int n;
-            n = 1000000;
+            n = 100000;
             
             boolean prime[] = new boolean[n+1];
             for(int i=0;i<=n;i++)
